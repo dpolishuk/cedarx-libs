@@ -1,4 +1,4 @@
-CROSS_COMPILE = arm-none-linux-gnueabi-
+CROSS_COMPILE = /opt/android-ndk-r8d/toolchains/arm-linux-androideabi-4.7/prebuilt/linux-x86/bin/arm-linux-androideabi-
 CC = $(CROSS_COMPILE)gcc
 CPP = $(CROSS_COMPILE)g++
 STRIP = $(CROSS_COMPILE)strip

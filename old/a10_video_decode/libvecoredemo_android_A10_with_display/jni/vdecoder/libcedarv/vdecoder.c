@@ -7,7 +7,7 @@ static s32 vdecoder_decode(cedarv_decoder_t* p);
 static s32 vdecoder_io_ctrl(cedarv_decoder_t* p, u32 cmd, u32 param);
 static s32 vdecoder_request_write(cedarv_decoder_t*p, u32 require_size, u8** buf0, u32* size0, u8** buf1, u32* size1);
 static s32 vdecoder_update_data(cedarv_decoder_t* p, cedarv_stream_data_info_t* data_info);
-static s32 vdeocder_display_request(cedarv_decoder_t* p, cedarv_picture_t* picture);
+static s32 vdecoder_display_request(cedarv_decoder_t* p, cedarv_picture_t* picture);
 static s32 vdecoder_display_release(cedarv_decoder_t* p, u32 frame_index);
 static s32 vdecoder_set_video_bitstream_info(cedarv_decoder_t* p, cedarv_stream_info_t* info);
 static s32 vdecoder_query_quality(cedarv_decoder_t* p, cedarv_quality_t* vq);
@@ -47,7 +47,7 @@ cedarv_decoder_t* libcedarv_init(s32* return_value)
     p->icedarv.ioctrl           = vdecoder_io_ctrl;
     p->icedarv.request_write    = vdecoder_request_write;
     p->icedarv.update_data      = vdecoder_update_data;
-    p->icedarv.display_request  = vdeocder_display_request;
+    p->icedarv.display_request  = vdecoder_display_request;
     p->icedarv.display_release  = vdecoder_display_release;
     p->icedarv.set_vstream_info = vdecoder_set_video_bitstream_info;
     p->icedarv.query_quality    = vdecoder_query_quality;
@@ -571,7 +571,7 @@ static s32 vdecoder_update_data(cedarv_decoder_t* p, cedarv_stream_data_info_t* 
     return 0;
 }
 
-static s32 vdeocder_display_request(cedarv_decoder_t* p, cedarv_picture_t* picture)
+static s32 vdecoder_display_request(cedarv_decoder_t* p, cedarv_picture_t* picture)
 {
 #if (DISPLAY_FREE_RUN == 0)
     u32              video_time;

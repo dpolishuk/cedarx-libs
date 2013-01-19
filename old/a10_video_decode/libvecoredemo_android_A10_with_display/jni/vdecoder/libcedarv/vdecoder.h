@@ -1,4 +1,3 @@
-
 #ifndef VDECODER_H
 #define VDECODER_H
 
@@ -10,6 +9,10 @@
 #include "vdecoder_config.h"
 
 #define VDECODER_TAG_INF_SIZE 240
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct VIDEO_DECODER video_decoder_t;
 
@@ -46,5 +49,8 @@ struct VIDEO_DECODER
 video_decoder_t* vdecoder_init(s32* return_value);
 s32              vdecoder_exit(video_decoder_t* p);
 
+#ifdef __cplusplus
+}
 #endif
 
+#endif

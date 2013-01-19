@@ -1,11 +1,11 @@
+#define MAX_DISP_ELEMENTS   32
+
 #include <stdio.h>
 #include <unistd.h>
 #include <malloc.h>
 #include <libcedarv.h>	//* for decoding video
 #include <pmp_ctrl.h>	//* for parsing PMP file
 #include "render.h"
-
-#define MAX_DISP_ELEMENTS   32
 
 typedef struct disp_element_t
 {
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 	void*				 		hpmp;
 	cedarv_decoder_t*    		hcedarv;
 
-	const char* 				media_file_path = "/mnt/sdcard/pmp/2.pmp";
+	const char* 				media_file_path = "/mnt/sdcard/2.pmp";
 	u32							pic_cnt=0;
 	FILE *f1y = NULL,*f1u= NULL,*f1v= NULL;
 	int i;
@@ -165,8 +165,6 @@ _read_again:
 				break;
 			}
 
-
-
 			//* 7.3 read bitstream data to the buffer.
 			ret = GetChunkData(hpmp, buf0, bufsize0, &data_info);
 			if(ret < 0)
@@ -198,54 +196,16 @@ _read_again:
 			if(ret == 0)
 			{
 				//* get one picture from decoder.
-				picture.display_mode = CDX_DISP_MODE_ORIGINAL;
-				picture.source_3d_mode = CDX_3D_MODE_NONE;
-				while(pic_cnt != 0 && render_get_disp_frame_id() != pic_cnt -1)
-				{
-					usleep(10 * 1000);
-					if(timeout_count > 50){
-						break;
-					}
-					timeout_count++;
-				}
+				printf("get one picture from decoder, picture id = %d, video width = %d, video height = %d, pts = %d.\n",
+						picture.id, picture.display_width, picture.display_height, (u32)picture.pts);
 
-				render_render((void *)&picture, pic_cnt);
-				//printf("pic_cnt %d, wr_idx %d, pic_id %d\n", pic_cnt, disp_queue.wr_idx, picture.id);
-				disp_queue.disp_elements[disp_queue.wr_idx].dec_frame_id = picture.id;
-				disp_queue.disp_elements[disp_queue.wr_idx].curr_disp_frame_id = pic_cnt;
-				disp_queue.wr_idx++;
-				if (disp_queue.wr_idx >= MAX_DISP_ELEMENTS){
-					disp_queue.wr_idx = 0;
-				}
-				pic_cnt++;
-
+				//* you can do some thing to display this picture now.
 
 				//* after one picture is displayed, you should return it to libcedarv to release the picture frame buffer.
+				hcedarv->display_release(hcedarv, picture.id);
 
 				//* note: you can request more than one picture.
 			}
-			curr_disp_frame_id = render_get_disp_frame_id();
-			if (last_disp_frame_id != curr_disp_frame_id)
-			{
-				for (i = 0; i < MAX_DISP_ELEMENTS; i++)
-				{
-					if(disp_queue.disp_elements[disp_queue.rd_idx].curr_disp_frame_id < curr_disp_frame_id)
-					{
-						id = disp_queue.disp_elements[disp_queue.rd_idx].dec_frame_id;
-						hcedarv->display_release(hcedarv, id);
-						//printf("release frame.last_disp_frame_id %d, curr_disp_frame_id %d, rd_idx %d, picture id %d\n", last_disp_frame_id, curr_disp_frame_id, disp_queue.rd_idx, id);
-						disp_queue.disp_elements[disp_queue.rd_idx].curr_disp_frame_id = -1;
-						disp_queue.rd_idx++;
-						if (disp_queue.rd_idx >= MAX_DISP_ELEMENTS)
-							disp_queue.rd_idx = 0;
-					}
-					else
-					{
-						break;
-					}
-				}
-			}
-			last_disp_frame_id = curr_disp_frame_id;
 		}
 		else
 		{
@@ -268,6 +228,3 @@ _read_again:
 
 	return 0;
 }
-
-
-
